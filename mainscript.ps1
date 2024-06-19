@@ -4,22 +4,18 @@
 $studentNameFilePath = "$env:Public\student_name.txt"
 $studentNumberFilePath = "$env:Public\student_number.txt"
 
-# Check if name is already stored
-if (Test-Path $studentNameFilePath) {
-    $studentName = (Get-Content $studentNameFilePath -Raw).Trim()
-} else {
-    # Introductory text
-    Write-Host "Welcome to the SAX-FLEX-INFRA script!"
-    Write-Host "This script will help you setup Virtual Machines"
-    Write-Host "The script will also configure some properties of the VM's"
-    Write-Host "For the configuration we need your name and student number"
-    Write-Host "This script is a project from students: Stefan, Luca, Simone, Ahmed and Matthias"
+# Introductory text
+Write-Host "Welcome to the SAX-FLEX-INFRA script!"
+Write-Host "This script will help you setup Virtual Machines"
+Write-Host "The script will also configure some properties of the VM's"
+Write-Host "For the configuration we need your name and student number"
+Write-Host "This script is a project from students: Stefan, Luca, Simone, Ahmed and Matthias"
 
-    # Prompt for student name
-    $studentName = (Read-Host "Please enter your name").Trim()
+# Prompt for student name
+$studentName = (Read-Host "Please enter your name").Trim()
 
-    # Save the student name
-    Set-Content -Path $studentNameFilePath -Value $studentName
+# Save the student name
+Set-Content -Path $studentNameFilePath -Value $studentName
 }
 
 # Check if student number is already stored
