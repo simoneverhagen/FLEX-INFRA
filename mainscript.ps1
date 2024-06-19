@@ -129,28 +129,6 @@ function Get-OSType {
 # Controleer of het script opnieuw gestart moet worden
 $restartFlagFile = "$env:Public\restart_flag.txt"
 
-if (-not (Test-Path $restartFlagFile)) {
-    ###########################ALGEMEEN#########################
-
-    # Installatie van PowerShell 7
-    [string]$InstallPowershell7ScriptUrl = "https://raw.githubusercontent.com/Matthias-Schulski/saxion-flex-infra/main/infra/main/pwsh7install.ps1"
-    $installPowershell7ScriptPath = "$env:Public\Downloads\InstallPowershell7.ps1"
-
-    # Download en voer het PowerShell 7 installatie script uit
-    Download-File -url $InstallPowershell7ScriptUrl -output $installPowershell7ScriptPath
-    & powershell -File $installPowershell7ScriptPath
-
-    # Maak een flag-bestand om aan te geven dat de installatie van PowerShell 7 voltooid is
-    New-Item -ItemType File -Path $restartFlagFile
-
-    # Herstart PowerShell met pwsh
-    Start-Process pwsh -ArgumentList "-NoExit", "-File `"$PSCommandPath`""
-    exit
-} else {
-    # Verwijder het flag-bestand
-    Remove-Item $restartFlagFile
-}
-
 # Installeer Dependencies
 [string]$GeneralScriptUrl = "https://raw.githubusercontent.com/Matthias-Schulski/saxion-flex-infra/main/infra/InstallDependencies.ps1"
 $generalScriptPath = "$env:Public\Downloads\GeneralScript.ps1"
@@ -186,59 +164,6 @@ foreach ($vm in $config.VMs) {
         $hasLinux = $true
     } elseif ($vm.Platform -eq "Windows") {
         $hasWindows = $true
-    }
-}
-
-if ($hasLinux) {
-    ############################LINUX############################
-    $linuxMainScriptUrl = "https://raw.githubusercontent.com/Stefanfrijns/HBOICT/main/test6/linuxmain.ps1"
-    $linuxMainScriptPath = "$env:Public\Downloads\LinuxMainScript.ps1"
-    Download-File -url $linuxMainScriptUrl -output $linuxMainScriptPath
-
-    foreach ($vm in $config.VMs) {
-        if ($vm.Platform -eq "Linux") {
-            $vmName = ("{0}_{1}_{2}" -f $courseName, $vm.VMName.Trim(), $studentNumber)
-            $osTypeKey = "{0} {1} {2} {3}" -f $vm.Platform, $vm.DistroName, $vm.DistroVariant, $vm.DistroVersion
-            $VHDUrl = $vhdUrlMap[$osTypeKey]
-            if (-not $VHDUrl) {
-                Write-Output "VHD URL not found for $osTypeKey. Skipping VM creation for $vmName."
-                continue
-            }
-            $OSType = Get-OSType -platform $vm.Platform -distroName $vm.DistroName
-            $MemorySize = $vm.VMMemorySize
-            $CPUs = $vm.VMCpuCount
-            $NetworkTypes = $vm.VMNetworkTypes
-            $Applications = $vm.VMApplications -join ','
-
-            # Construeer de argumenten voor netwerktypes en subnetten
-            $networkTypeArgs = @()
-            foreach ($networkType in $NetworkTypes) {
-                $subnet = $config.EnvironmentVariables.Subnets | Where-Object { $_.Name -eq $networkType }
-                $networkTypeArgs += @{
-                    "Type" = $subnet.Type
-                    "AdapterName" = $subnet.AdapterName
-                    "Network" = $subnet.Network
-                }
-            }
-
-            # Debug output for network types
-            Write-Output "Network Types for VM:"
-            $networkTypeArgs | ForEach-Object { Write-Output " - Type: $($_.Type), AdapterName: $($_.AdapterName), Network: $($_.Network)" }
-
-            # Roep het Linux hoofscript aan met de juiste parameters
-            $arguments = @(
-                "-VMName", $vmName,
-                "-VHDUrl", $VHDUrl,
-                "-OSType", $OSType,
-                "-MemorySize", $MemorySize,
-                "-CPUs", $CPUs,
-                "-NetworkTypes", ($networkTypeArgs | ConvertTo-Json -Compress),
-                "-Applications", $Applications,
-                "-ConfigureNetworkPath", $linuxMainScriptPath,
-                "-DistroName", $vm.DistroName
-            )
-            & pwsh -File $linuxMainScriptPath @arguments
-        }
     }
 }
 
