@@ -86,49 +86,6 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 # Variabele voor config script
 [string]$VHDLinksUrl = "https://raw.githubusercontent.com/Matthias-Schulski/saxion-flex-infra/main/courses/harddisks.json"
 
-#Code by Stefan
-# Functie om een bestand te downloaden
-function Download-File {
-    param (
-        [string]$url,
-        [string]$output
-    )
-    try {
-        $client = New-Object System.Net.WebClient
-        $client.DownloadFile($url, $output)
-        Write-Output "Downloaded file from $url to $output"
-    } catch {
-        Write-Output "Failed to download file from $url to $output"
-        throw
-    }
-}
-
-# Functie om het OS-type te bepalen
-function Get-OSType {
-    param (
-        [string]$platform,
-        [string]$distroName
-    )
-    if ($platform -eq "Linux") {
-        if ($distroName -match "Ubuntu") {
-            return "Ubuntu_64"
-        } elseif ($distroName -match "Debian") {
-            return "Debian_64"
-        } elseif ($distroName -match "Alpine") {
-            return "Alpine_64"
-        } else {
-            return "OtherLinux_64"
-        }
-    } elseif ($platform -eq "Windows") {
-        return "Windows"
-    } else {
-        return "Unknown"
-    }
-}
-
-# Controleer of het script opnieuw gestart moet worden
-$restartFlagFile = "$env:Public\restart_flag.txt"
-
 # Installeer Dependencies
 [string]$GeneralScriptUrl = "https://raw.githubusercontent.com/Matthias-Schulski/saxion-flex-infra/main/infra/InstallDependencies.ps1"
 $generalScriptPath = "$env:Public\Downloads\GeneralScript.ps1"
