@@ -44,6 +44,6 @@ Dismount-DiskImage -ImagePath $newVhdPath
 
 # Create a VM
 & $vboxManagePath createvm --name "$courseName-$studentNumber-vm1" --ostype="Windows2022_64" --register #test
-& $vboxManagePath modifyvm "$courseName-$studentNumber-vm1" --cpus $cpu --memory $ram
+& $vboxManagePath modifyvm "$courseName-$studentNumber-vm1" --cpus $cpu --memory $ram --nic1 nat
 & $vboxManagePath storagectl "$courseName-$studentNumber-vm1" --name "SATA Controller" --add sata --controller IntelAhci #test
 & $vboxManagePath storageattach "$courseName-$studentNumber-vm1" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium $newVhdPath
