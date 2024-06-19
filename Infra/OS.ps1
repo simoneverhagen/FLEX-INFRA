@@ -14,9 +14,9 @@ $ram = Read-Host -Prompt 'Enter the amount of RAM in MB'
 # Define paths
 $baseDir = "C:\SAX-FLEX-INFRA"
 $courseDir = Join-Path -Path $baseDir -ChildPath "Courses\$courseName"
-$vhdPath = Join-Path -Path $baseDir -ChildPath 'BASE-FILES\Windows server 2022.vhd'
+$vhdPath = Join-Path -Path $baseDir -ChildPath 'BASE-FILES\server2019.vhd'
 $newVhdPath = Join-Path -Path $courseDir -ChildPath "$courseName-$studentNumber-vm1.vhd"
-$unattendedPath = Join-Path -Path $baseDir -ChildPath 'BASE-FILES\unattend.xml'
+$unattendedPath = https://raw.githubusercontent.com/simoneverhagen/FLEX-INFRA/main/Infra/unattended.xml
 $vboxManagePath = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
 
 # Create course directory
