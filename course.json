@@ -1,0 +1,20 @@
+{
+  "CourseName": "Virtualisatie",
+  "EnvironmentVariables": {
+    "IPRange": "172.168.0.0/24"
+  },
+  "VMs": [
+    {
+      "VMName": "VM1",
+      "VMVHDFile": "Windows Server 2019",
+      "VMNetworkType": "nat",
+      "VMCpuCount": 4,
+      "VMMemorySize": 4096,
+      "VMApplications": [
+        "googlechrome",
+        "firefox"
+      ],
+      "Roles": [
+        "Web Server"
+      ]
+    }
